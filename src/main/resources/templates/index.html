@@ -1,10 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Strona główna</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>1D Cutting Stock Problem</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
 </head>
 <body>
-    <p>Działam!</p>
+<div class="container">
+
+    <h1>1D Cutting Stock Problem</h1>
+    <h3>Using the the open source GALib library<br><small>Aplikacja oblicza optymalne rozwiązanie problemu jednowymiarowego rozkroju drewna.</small></h3>
+
+    <div class="mt-4"> </div>
+    <!--/*@thymesVar id="indexFormDto" type="prz.cutting.stock.DTO.IndexFormDTO"*/-->
+    <form th:action="@{/}" th:object="${indexFormDto}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="main_beam_length">Długość belki głównej (roboczej)</label>
+            <input type="number" class="form-control" id="main_beam_length" th:field="*{mainBeam}">
+        </div>
+        <div class="form-group">
+            <label for="no_of_elements">Ilość dłużyc (elementów do pocięcia)</label>
+            <input type="number" class="form-control" id="no_of_elements" th:field="*{nOfElements}">
+        </div>
+        <div class="form-group">
+            <label for="all_elements">Długości poszczególnych dłużyc (elementów)</label>
+            <textarea class="form-control" id="all_elements" rows="3" th:field="*{allElements}"></textarea>
+            <small class="form-text text-muted">Każda długość w osobnej lini. Liczba wierszy powinna zgadzać się z wyżej zadeklarowaną wartością.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Oblicz</button>
+    </form>
+
+    <div th:if="${algorithmResult != null && !algorithmResult.trim().isEmpty()}" class="mt-4">
+        <h4>Output:</h4>
+        <p th:utext="${algorithmResult}"></p>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</div>
 </body>
 </html>
