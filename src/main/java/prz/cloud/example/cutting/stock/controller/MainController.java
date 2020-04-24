@@ -71,6 +71,6 @@ public class MainController {
             session.setAttribute("FORM", new IndexFormDTO());
         }
 
-        return "index";
+        return "redirect:/";
     }
 }
