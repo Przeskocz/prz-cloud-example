@@ -2,6 +2,7 @@ package prz.cloud.example.cutting.stock.algorithm.impl;
 
 import com.softtechdesign.ga.GAException;
 import prz.cloud.example.cutting.stock.DAO.InputData;
+import prz.cloud.example.cutting.stock.DTO.GASettings;
 
 
 import java.util.*;
@@ -20,7 +21,7 @@ class GACuttingStockFactory {
      * @return Obiekt rozszerzony o biblitekę GALib, modelujący sposoby cięcia jako tablice ciągów
      * @throws GAException Wyjątek z biblioteki GALib
      */
-    static GACuttingStock getGaCuttingStockObj(InputData dataSample) throws GAException {
+    static GACuttingStock getGaCuttingStockObj(InputData dataSample, GASettings settings) throws GAException {
         // Przykład: 5,5,5,2,2,2,3,3,3
         List<Integer> allBeams = Arrays.stream(dataSample.getBeamLengths()).boxed().collect(Collectors.toList());
 
@@ -43,6 +44,6 @@ class GACuttingStockFactory {
         }
 
         return new GACuttingStock(beamsWithCountMap, uniqueBeamsStr,
-                dataSample.getNumberOfElements(), dataSample.getMainBeamLength());
+                dataSample.getNumberOfElements(), dataSample.getMainBeamLength(), settings);
     }
 }
