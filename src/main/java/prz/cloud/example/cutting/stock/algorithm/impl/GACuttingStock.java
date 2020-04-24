@@ -164,7 +164,7 @@ public class GACuttingStock extends GAStringsSeq {
             int beamLength = StringToInt(beam);
 
             if (beamLength > workLengthBeam) {
-                String ct = resultList.get(index) + " -> waste: " + workLengthBeam;
+                String ct = resultList.get(index) + " -> odpad: " + workLengthBeam;
                 resultList.set(index, ct);
                 sumOfWaste += workLengthBeam;
                 workLengthBeam = this.mainBeamLength;

@@ -15,20 +15,23 @@ public class GenAlgorithmImpl implements IGenAlgorithm {
     }
     @Override
     public String getResult(InputData inputData, GASettings settings) {
-        try {
 
+        try {
             if (inputData == null) {
                 throw new RuntimeException("Failed to read an input file!");
             }
-
+            long millisActualTime = System.currentTimeMillis();
             GACuttingStock gaCuttingStock = GACuttingStockFactory.getGaCuttingStockObj(inputData, settings);
             Thread threadGraph = new Thread(gaCuttingStock);
             threadGraph.setPriority(Thread.MAX_PRIORITY);
             threadGraph.start();
             threadGraph.join();
             if (!threadGraph.isAlive()) {
+                long executionTime = System.currentTimeMillis() - millisActualTime;
                 if (gaCuttingStock.getFittestChromosomesFitness() != 0) {
-                    return gaCuttingStock.performResult();
+                    String results = gaCuttingStock.performResult();
+                    results = "Całkowity czas algorytmu: " + executionTime + " ms.<br>" + results;
+                    return results;
                 }
             }
         } catch (InterruptedException | GAException e) {

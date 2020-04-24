@@ -38,25 +38,29 @@ public class MainController {
 
     @PostMapping("/")
     public ModelAndView getOptimizedResult(@ModelAttribute("indexFormDTO") @Valid IndexFormDTO indexFormDTO, HttpSession session) {
+        long millisActualTime = System.currentTimeMillis();
+        String results = "";
         ModelAndView modelAndView = new ModelAndView("index");
         if (indexFormDTO != null) {
             session.setAttribute("FORM", indexFormDTO);
             modelAndView.addObject("indexFormDto", indexFormDTO);
             InputData inputData = indexFormDTO.convertToDTO();
             GASettings settings = indexFormDTO.getSettings();
-            if (inputData != null) {
-                String results = genAlgorithm.getResult(inputData, settings);
-                modelAndView.addObject("algorithmResult", results);
-            }
+            if (inputData != null)
+                results = genAlgorithm.getResult(inputData, settings);
+
         } else {
             modelAndView.addObject("indexFormDto", new IndexFormDTO());
         }
+        long executionTime = System.currentTimeMillis() - millisActualTime;
 
+        results = "Całkowity czas programu: " + executionTime + " ms.<br>" + results;
+        modelAndView.addObject("algorithmResult", results);
         return modelAndView;
     }
 
     @GetMapping("/restore")
-    public String getREstoreSettings(Model model, HttpSession session){
+    public String getRestoreSettings(Model model, HttpSession session){
         IndexFormDTO form = (IndexFormDTO) session.getAttribute("FORM");
         if (form != null && form.getSettings() != null) {
             form.getSettings().resetSettings();
