@@ -38,7 +38,7 @@
                     </small>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Oblicz</button>
+                <button type="submit" class="btn btn-outline-success">Oblicz</button>
 
                 <h4 class="mt-4">Ustawienia algorytmu:</h4>
                 <div class="form-group">
@@ -91,10 +91,10 @@
 
                 <div class="form-group">
                     <label for="corossoverType">Statystyki dla każdego pokolenia?</label>
-                    <input type="checkbox" th:field="*{settings.calculateStats}"/>
+                    <input type="checkbox" th:field="*{settings.calculateStats}" th:checked="*{settings.calculateStats}"/>
                 </div>
 
-                <a class="btn btn-link" role="button" th:href="@{/restore}" href="#">Przywróć domyślne</a>
+                <a class="btn btn-outline-info" role="button" th:href="@{/restore}" href="#">Przywróć domyślne</a>
             </form>
         </div>
         <div class="col-md-1"></div>
