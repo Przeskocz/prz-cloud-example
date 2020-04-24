@@ -83,8 +83,8 @@ public class GACuttingStock extends GAStringsSeq {
         for(int i = 0; i<getChromosome(chromeIndex).getGenes().length; i++) {
             chromosome.setGene(getChromosome(chromeIndex).getGenes()[i],i);
         }
-        MyChrom chrom = getFitness(chromosome);
-        if (chrom != null) {
+        MyChrom chrom = MyChrom.generate(chromosome, beamsWithCountMap, mainBeamLength, maxPossibleWaste);
+        if (chrom != null && chrom.getFitness() > 0) {
             chromosomeSet.add(chrom);
             return chrom.getFitness();
         } else {
@@ -92,75 +92,11 @@ public class GACuttingStock extends GAStringsSeq {
         }
     }
 
-    private MyChrom getFitness(ChromString chromosome) {
-
-        String[] genes = chromosome.getGenes();
-
-        if (!matchBeamsCount(genes))
-            return null;
-
-
-        MyChrom myChrom = new MyChrom(chromosome);
-        int sumOfWaste = 0;
-        int tmpMainBeam = mainBeamLength;
-        for (String gen : genes) {
-            int val = StringToInt(gen);
-
-            if (tmpMainBeam < val) {
-                sumOfWaste += tmpMainBeam;
-                tmpMainBeam = mainBeamLength;
-            }
-            tmpMainBeam -= val;
-        }
-
-        if (tmpMainBeam < mainBeamLength && tmpMainBeam > 0) {
-            sumOfWaste += tmpMainBeam;
-        }
-
-
-
-        // scaling the waste from 0 to 10 (for a rate)
-        double wasteRate = (sumOfWaste * 10.0) / maxPossibleWaste;
-        wasteRate = new BigDecimal(wasteRate).setScale(2, RoundingMode.HALF_UP).doubleValue();
-        myChrom.setFitness(10.0 - wasteRate);
-        myChrom.setTotalWaste(sumOfWaste);
-        return myChrom;
-    }
-
-    /**
-     * Długość i ilość belek musi odpowiadać początkowym ograniczeniom
-     * @param genes Tablica genów, czyli belek w sposobie cięcia
-     * @return Czy rodzaj cięcia spełnia początkowe ograniczenia
-     * */
-    private boolean matchBeamsCount(String[] genes) {
-        Set<String> usedBeams = new HashSet<>(Arrays.asList(genes));
-
-        if (beamsWithCountMap == null)
-            return false;
-
-        for (String usedBeamStr : usedBeams) {
-            int usedBeamInt = StringToInt(usedBeamStr);
-            int shouldCount = beamsWithCountMap.get(usedBeamInt);
-
-            int counted = 0;
-            for (String gen : genes) {
-                int genVal = StringToInt(gen);
-                if (genVal == usedBeamInt)
-                    counted++;
-            }
-
-            if (shouldCount != counted)
-                return false;
-        }
-
-        return true;
-    }
-
     static String IntToString(Integer v) {
         return v.toString();
     }
 
-    private static int StringToInt(String v) {
+    static int StringToInt(String v) {
         return Integer.parseInt(v);
     }
 
@@ -169,8 +105,9 @@ public class GACuttingStock extends GAStringsSeq {
      */
     String performResult(){
         StringBuilder result = new StringBuilder();
+
         ChromString chromosome = (ChromString) this.getFittestChromosome();
-        MyChrom myChrom = new MyChrom(chromosome);
+        MyChrom myChrom = chromosomeSet.stream().filter(x->x.getChromString().equals(chromosome)).findFirst().get();
         String[] genes = myChrom.getGenes();
         List<String> resultList = new ArrayList<>();
 
@@ -216,16 +153,18 @@ public class GACuttingStock extends GAStringsSeq {
         for (String cut : resultList) {
             result.append("Cięcie#").append(++index).append(": ").append(cut).append("\n");
         }
-        result.append("Ocena rozwiązania: ").append(getFitness(chromosome)).append("\n");
+        result.append("Ocena rozwiązania: ").append(myChrom.getFitness()).append("\n");
         result.append("Łączny odpad: ").append(sumOfWaste).append("\n");
 
 
 
         List<MyChrom> listOfChrom = new ArrayList<>(chromosomeSet);
         listOfChrom.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
-        result.append("\nLista zakwalifikowanych chromosomów (").append(listOfChrom.size()).append("):\n");
+        result.append("\nLista pozostałych chromosomów (").append(listOfChrom.size()).append("):\n");
         int i=1;
         for(MyChrom chromElem : listOfChrom) {
+            if (chromElem.equals(myChrom))
+                continue;
             StringBuilder res = new StringBuilder("Chrom");
             if (i < 10)
                 res.append("0");
