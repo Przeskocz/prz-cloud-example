@@ -117,10 +117,13 @@ public class GACuttingStock extends GAStringsSeq {
             sumOfWaste += tmpMainBeam;
         }
 
+
+
         // scaling the waste from 0 to 10 (for a rate)
         double wasteRate = (sumOfWaste * 10.0) / maxPossibleWaste;
         wasteRate = new BigDecimal(wasteRate).setScale(2, RoundingMode.HALF_UP).doubleValue();
         myChrom.setFitness(10.0 - wasteRate);
+        myChrom.setTotalWaste(sumOfWaste);
         return myChrom;
     }
 

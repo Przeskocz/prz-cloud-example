@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class MyChrom implements Comparable<MyChrom> {
     private double fitness;
+    private int totalWaste;
     private ChromString chromString;
 
     public MyChrom(ChromString chromString) {
@@ -45,9 +46,25 @@ public class MyChrom implements Comparable<MyChrom> {
         return res.toString();
     }
 
+    public int getTotalWaste() {
+        return totalWaste;
+    }
+
+    public void setTotalWaste(int totalWaste) {
+        this.totalWaste = totalWaste;
+    }
+
+    public ChromString getChromString() {
+        return chromString;
+    }
+
+    public void setChromString(ChromString chromString) {
+        this.chromString = chromString;
+    }
+
     @Override
     public String toString() {
-        return this.getGenesAsString() + ", fitness = " + this.fitness;
+        return this.getGenesAsString() + ", odpad = "+this.totalWaste + ", fitness = " + this.fitness;
     }
 
 
