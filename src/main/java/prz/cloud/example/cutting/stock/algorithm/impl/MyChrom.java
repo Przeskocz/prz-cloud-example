@@ -2,6 +2,8 @@ package prz.cloud.example.cutting.stock.algorithm.impl;
 
 import com.softtechdesign.ga.ChromString;
 
+import java.util.Objects;
+
 public class MyChrom implements Comparable<MyChrom> {
     private double fitness;
     private ChromString chromString;
@@ -62,5 +64,18 @@ public class MyChrom implements Comparable<MyChrom> {
             return 0;
         else
             return otherGenes.length - this.getGenes().length;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MyChrom myChrom = (MyChrom) o;
+        return Objects.equals(chromString, myChrom.chromString);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chromString);
     }
 }

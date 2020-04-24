@@ -1,5 +1,7 @@
 package com.softtechdesign.ga;
 
+import java.util.Arrays;
+
 public class ChromString extends Chromosome {
     private String[] genes;
 
@@ -57,5 +59,18 @@ public class ChromString extends Chromosome {
             this.genes[var2] = var3.genes[var2];
         }
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChromString that = (ChromString) o;
+        return Arrays.equals(genes, that.genes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(genes);
     }
 }

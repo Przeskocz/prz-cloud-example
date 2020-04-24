@@ -1,7 +1,6 @@
 package prz.cloud.example.cutting.stock.algorithm.impl;
 
 import com.softtechdesign.ga.ChromString;
-import com.softtechdesign.ga.Crossover;
 import com.softtechdesign.ga.GAException;
 import com.softtechdesign.ga.GAStringsSeq;
 import prz.cloud.example.cutting.stock.DTO.GASettings;
@@ -33,7 +32,9 @@ public class GACuttingStock extends GAStringsSeq {
      */
     private boolean isAfterInit = false;
 
-    private Set<MyChrom> chromosomeList = new TreeSet<>();
+    private int maxPossibleWaste = 0;
+
+    private Set<MyChrom> chromosomeSet = new HashSet<>();
 
     GACuttingStock(Map<Integer, Integer> beamsWithCountMap, String[] possibleCutting, int numberOfElements, int mainBeamLength, GASettings settings) throws GAException {
         super(numberOfElements, // wymiar chromosomu (liczba genów)
@@ -60,6 +61,14 @@ public class GACuttingStock extends GAStringsSeq {
         this.numberOfElements = numberOfElements;
         this.mainBeamLength = mainBeamLength;
         this.isAfterInit = true;
+
+
+        for(Map.Entry<Integer, Integer> entry: beamsWithCountMap.entrySet()) {
+            int beam = entry.getKey();
+            int count = entry.getValue();
+
+            maxPossibleWaste += (mainBeamLength-beam)*count;
+        }
     }
 
     /**
@@ -74,21 +83,24 @@ public class GACuttingStock extends GAStringsSeq {
         for(int i = 0; i<getChromosome(chromeIndex).getGenes().length; i++) {
             chromosome.setGene(getChromosome(chromeIndex).getGenes()[i],i);
         }
-        double fit = getFitness(chromosome);
-        if (fit > 0.0) {
-            MyChrom myChrom = new MyChrom(chromosome);
-            myChrom.setFitness(fit);
-            chromosomeList.add(myChrom);
+        MyChrom chrom = getFitness(chromosome);
+        if (chrom != null) {
+            chromosomeSet.add(chrom);
+            return chrom.getFitness();
+        } else {
+            return 0;
         }
-        return fit;
     }
 
-    private double getFitness(ChromString chromosome) {
+    private MyChrom getFitness(ChromString chromosome) {
+
         String[] genes = chromosome.getGenes();
 
         if (!matchBeamsCount(genes))
-            return 0;
+            return null;
 
+
+        MyChrom myChrom = new MyChrom(chromosome);
         int sumOfWaste = 0;
         int tmpMainBeam = mainBeamLength;
         for (String gen : genes) {
@@ -106,9 +118,10 @@ public class GACuttingStock extends GAStringsSeq {
         }
 
         // scaling the waste from 0 to 10 (for a rate)
-        double wasteRate = (sumOfWaste * 10.0) / mainBeamLength;
-        wasteRate = new BigDecimal(wasteRate).setScale(1, RoundingMode.HALF_UP).doubleValue();
-        return mainBeamLength < wasteRate ? 0 : 10.0 - wasteRate;
+        double wasteRate = (sumOfWaste * 10.0) / maxPossibleWaste;
+        wasteRate = new BigDecimal(wasteRate).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        myChrom.setFitness(10.0 - wasteRate);
+        return myChrom;
     }
 
     /**
@@ -154,7 +167,8 @@ public class GACuttingStock extends GAStringsSeq {
     String performResult(){
         StringBuilder result = new StringBuilder();
         ChromString chromosome = (ChromString) this.getFittestChromosome();
-        String[] genes = chromosome.getGenes();
+        MyChrom myChrom = new MyChrom(chromosome);
+        String[] genes = myChrom.getGenes();
         List<String> resultList = new ArrayList<>();
 
         int workLengthBeam = this.mainBeamLength;
@@ -203,9 +217,12 @@ public class GACuttingStock extends GAStringsSeq {
         result.append("Łączny odpad: ").append(sumOfWaste).append("\n");
 
 
-        result.append("\nLista zakwalifikowanych chromosomów:\n");
+
+        List<MyChrom> listOfChrom = new ArrayList<>(chromosomeSet);
+        listOfChrom.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
+        result.append("\nLista zakwalifikowanych chromosomów (").append(listOfChrom.size()).append("):\n");
         int i=1;
-        for(MyChrom chromElem : chromosomeList) {
+        for(MyChrom chromElem : listOfChrom) {
             StringBuilder res = new StringBuilder("Chrom");
             if (i < 10)
                 res.append("0");
