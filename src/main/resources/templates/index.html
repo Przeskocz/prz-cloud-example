@@ -90,8 +90,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="corossoverType">Statystyki dla każdego pokolenia?</label>
-                    <input type="checkbox" th:field="*{settings.calculateStats}" th:checked="*{settings.calculateStats}"/>
+                    <label for="calculateStats">Statystyki dla każdego pokolenia?</label>
+                    <input id="calculateStats" type="checkbox" th:field="*{settings.calculateStats}" th:checked="*{settings.calculateStats}"/>
                 </div>
 
                 <a class="btn btn-outline-info" role="button" th:href="@{/restore}" href="#">Przywróć domyślne</a>

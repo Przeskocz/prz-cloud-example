@@ -160,7 +160,7 @@ public class GACuttingStock extends GAStringsSeq {
 
         List<MyChrom> listOfChrom = new ArrayList<>(chromosomeSet);
         listOfChrom.sort((o1, o2) -> Double.compare(o2.getFitness(), o1.getFitness()));
-        result.append("\nLista pozostałych chromosomów (").append(listOfChrom.size()).append("):\n");
+        result.append("\nLista pozostałych chromosomów (").append(listOfChrom.size()-1).append("):\n");
         int i=1;
         for(MyChrom chromElem : listOfChrom) {
             if (chromElem.equals(myChrom))
